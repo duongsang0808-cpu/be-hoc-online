@@ -3,33 +3,37 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Học cùng Bảo Khánh</title>
+<title>Học cùng Bảo Khánh 2.0</title>
 <style>
-body{font-family:Arial,Helvetica,sans-serif;margin:0;background:linear-gradient(135deg,#6a8dff,#00c9a7);color:#333}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(135deg,#5f8dff,#00d2a8);} 
 .container{max-width:500px;margin:auto;padding:15px}
-.card{background:white;border-radius:20px;padding:20px;margin-bottom:20px;box-shadow:0 8px 20px rgba(0,0,0,0.15);text-align:center}
-button{padding:12px 18px;margin:8px;border:none;border-radius:12px;font-size:18px;cursor:pointer;background:#ff7aa2;color:white}
-button:hover{opacity:0.85}
-.choice{display:inline-block;margin:5px}
-.big{font-size:28px;margin:15px}
+.header{background:linear-gradient(135deg,#6a8dff,#00c9a7);color:white;padding:25px 15px;border-radius:25px;text-align:center;box-shadow:0 10px 25px rgba(0,0,0,0.2)}
+.header h1{font-size:20px;white-space:nowrap;margin:0 0 15px 0}
+.score{background:white;color:#333;display:inline-block;padding:10px 25px;border-radius:40px;font-size:18px;font-weight:bold}
+.card{background:white;border-radius:20px;padding:20px;margin-top:20px;box-shadow:0 8px 20px rgba(0,0,0,0.15);text-align:center}
+.menu-btn{width:100%;padding:18px;margin:10px 0;border:none;border-radius:18px;font-size:20px;font-weight:bold;cursor:pointer;background:#f2f2f2}
+.menu-btn:hover{background:#e6e6e6}
+button.option{padding:14px 20px;margin:8px;border:none;border-radius:15px;font-size:20px;background:#ff7aa2;color:white;cursor:pointer}
+button.option:hover{opacity:0.85}
+.big{font-size:32px;margin:15px}
 .hidden{display:none}
-.header{color:white;text-align:center;padding:25px 10px}
-.score{background:white;color:#333;display:inline-block;padding:10px 20px;border-radius:30px;font-size:18px}
-.firework{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;font-size:40px;display:flex;align-items:center;justify-content:center;animation:boom 1s ease-out}
-@keyframes boom{0%{transform:scale(0.3);opacity:1}100%{transform:scale(2);opacity:0}}
+.back{margin-top:15px;background:#ccc;color:#333}
+canvas{position:fixed;top:0;left:0;pointer-events:none}
 </style>
 </head>
 <body>
+<canvas id="fireworks"></canvas>
 <div class="container">
 <div class="header">
 <h1>Chào mừng bé Dương Bảo Khánh 💙</h1>
 <div class="score">⭐ Điểm: <span id="score">0</span></div>
 </div>
 
-<div class="card">
-<button onclick="startCounting()">🚗 Tập Đếm</button>
-<button onclick="startCompare()">🔢 So Sánh > < =</button>
-<button onclick="startMath()">➕ Cộng Trừ (0-20)</button>
+<div id="menu" class="card">
+<button class="menu-btn" onclick="startCounting()">🚗 Tập Đếm</button>
+<button class="menu-btn" onclick="startCompare()">🔢 So Sánh > < =</button>
+<button class="menu-btn" onclick="startMath()">➕ Cộng Trừ (0-20)</button>
+<button class="menu-btn" onclick="startVietnamese()">🔤 Học Chữ & Đánh Vần</button>
 </div>
 
 <div id="game" class="card hidden"></div>
@@ -37,33 +41,74 @@ button:hover{opacity:0.85}
 
 <script>
 let score=0;
-function speak(text){let msg=new SpeechSynthesisUtterance(text);msg.lang='vi-VN';speechSynthesis.speak(msg)}
-function addScore(){score++;document.getElementById('score').innerText=score;if(score%5===0)firework()}
-function firework(){let fw=document.createElement('div');fw.className='firework';fw.innerText='🎆';document.body.appendChild(fw);setTimeout(()=>fw.remove(),1000)}
+const game=document.getElementById('game');
+const menu=document.getElementById('menu');
+const scoreEl=document.getElementById('score');
 
-function startCounting(){let num=Math.floor(Math.random()*10)+1;let game=document.getElementById('game');game.classList.remove('hidden');let emojis='🚗'.repeat(num);let options=[num,num+1,num-1].sort(()=>Math.random()-0.5);
- game.innerHTML=`<div class='big'>${emojis}</div><div> Có bao nhiêu chiếc xe? </div>`;
+function speak(text){let msg=new SpeechSynthesisUtterance(text);msg.lang='vi-VN';speechSynthesis.speak(msg)}
+
+function cheerSound(){const ctx=new (window.AudioContext||window.webkitAudioContext)();let osc=ctx.createOscillator();let gain=ctx.createGain();osc.connect(gain);gain.connect(ctx.destination);osc.type='triangle';osc.frequency.value=500;gain.gain.value=0.2;osc.start();osc.frequency.exponentialRampToValueAtTime(1000,ctx.currentTime+0.3);osc.stop(ctx.currentTime+0.3)}
+
+function addScore(){score++;scoreEl.innerText=score;cheerSound();launchFireworks();}
+
+function backMenu(){game.classList.add('hidden');menu.classList.remove('hidden');}
+
+function startCounting(){menu.classList.add('hidden');game.classList.remove('hidden');let num=Math.floor(Math.random()*10)+1;let emojis='🚗'.repeat(num);let options=[num,num+1,num-1].sort(()=>Math.random()-0.5);
+ game.innerHTML=`<div class='big'>${emojis}</div><div>Có bao nhiêu chiếc xe?</div>`;
  speak('Có bao nhiêu chiếc xe?');
  options.forEach(o=>{
- let btn=document.createElement('button');btn.innerText=o;btn.onclick=function(){if(o===num){addScore();alert('Giỏi lắm!')}else alert('Sai rồi!');startCounting()};
+ let btn=document.createElement('button');btn.className='option';btn.innerText=o;
+ btn.onclick=()=>{if(o===num){addScore();speak('Giỏi lắm Bảo Khánh');}else{speak('Thử lại nhé');}startCounting()};
  game.appendChild(btn);
- })}
+ });
+ addBack();}
 
-function startCompare(){let a=Math.floor(Math.random()*50);let b=Math.floor(Math.random()*50);let game=document.getElementById('game');game.classList.remove('hidden');game.innerHTML=`<div class='big'>${a} ? ${b}</div><div>Chọn dấu đúng</div>`;
+function startCompare(){menu.classList.add('hidden');game.classList.remove('hidden');let a=Math.floor(Math.random()*50);let b=Math.floor(Math.random()*50);
+ game.innerHTML=`<div class='big'>${a} ? ${b}</div><div>Chọn dấu đúng</div>`;
  speak(`So sánh ${a} và ${b}`);
  ['>','<','='].forEach(sign=>{
- let btn=document.createElement('button');btn.innerText=sign;btn.onclick=function(){if((a>b&&sign==='>')||(a<b&&sign==='<')||(a===b&&sign==='=')){addScore();alert('Đúng rồi!')}else alert('Sai rồi!');startCompare()};
+ let btn=document.createElement('button');btn.className='option';btn.innerText=sign;
+ btn.onclick=()=>{if((a>b&&sign==='>')||(a<b&&sign==='<')||(a===b&&sign==='=')){addScore();speak('Đúng rồi');}else{speak('Sai rồi');}startCompare()};
  game.appendChild(btn);
- })}
+ });
+ addBack();}
 
-function startMath(){let a=Math.floor(Math.random()*20);let b=Math.floor(Math.random()*20);let isPlus=Math.random()>0.5;let correct=isPlus?a+b:a-b;if(correct<0||correct>20){startMath();return}
- let game=document.getElementById('game');game.classList.remove('hidden');game.innerHTML=`<div class='big'>${a} ${isPlus?'+':'-'} ${b} = ?</div>`;
- speak(`${a} ${isPlus?'cộng':'trừ'} ${b} bằng bao nhiêu`);
- let options=[correct,correct+1,correct-1].sort(()=>Math.random()-0.5);
+function startMath(){menu.classList.add('hidden');game.classList.remove('hidden');let a=Math.floor(Math.random()*20);let b=Math.floor(Math.random()*20);let plus=Math.random()>0.5;let result=plus?a+b:a-b;if(result<0||result>20){startMath();return}
+ game.innerHTML=`<div class='big'>${a} ${plus?'+':'-'} ${b} = ?</div>`;
+ speak(`${a} ${plus?'cộng':'trừ'} ${b} bằng bao nhiêu`);
+ let options=[result,result+1,result-1].sort(()=>Math.random()-0.5);
  options.forEach(o=>{
- let btn=document.createElement('button');btn.innerText=o;btn.onclick=function(){if(o===correct){addScore();alert('Chính xác!')}else alert('Chưa đúng!');startMath()};
+ let btn=document.createElement('button');btn.className='option';btn.innerText=o;
+ btn.onclick=()=>{if(o===result){addScore();speak('Chính xác');}else{speak('Chưa đúng');}startMath()};
  game.appendChild(btn);
- })}
+ });
+ addBack();}
+
+function startVietnamese(){menu.classList.add('hidden');game.classList.remove('hidden');let letters=['A','Ă','Â','B','C','D','Đ','E','Ê','G','H','I','K','L','M','N','O','Ô','Ơ','P','Q','R','S','T','U','Ư','V','X','Y'];
+ let correct=letters[Math.floor(Math.random()*letters.length)];
+ game.innerHTML=`<div class='big'>Chọn chữ: ${correct}</div>`;
+ speak(`Chọn chữ ${correct}`);
+ letters.sort(()=>Math.random()-0.5).slice(0,6).forEach(l=>{
+ let btn=document.createElement('button');btn.className='option';btn.innerText=l;
+ btn.onclick=()=>{if(l===correct){addScore();speak('Giỏi lắm');}else{speak('Sai rồi');}startVietnamese()};
+ game.appendChild(btn);
+ });
+ addBack();}
+
+function addBack(){let back=document.createElement('button');back.className='option back';back.innerText='⬅ Quay lại';back.onclick=backMenu;game.appendChild(back)}
+
+// Fireworks
+const canvas=document.getElementById('fireworks');
+const ctx=canvas.getContext('2d');canvas.width=window.innerWidth;canvas.height=window.innerHeight;
+function launchFireworks(){for(let i=0;i<30;i++){setTimeout(()=>{
+ let x=Math.random()*canvas.width;
+ let y=Math.random()*canvas.height/2;
+ let radius=Math.random()*4+2;
+ ctx.beginPath();ctx.arc(x,y,radius,0,Math.PI*2);
+ ctx.fillStyle=`hsl(${Math.random()*360},100%,50%)`;
+ ctx.fill();
+ setTimeout(()=>ctx.clearRect(0,0,canvas.width,canvas.height),500);
+ },i*20)}}
 </script>
 </body>
 </html>
