@@ -3,112 +3,146 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Học cùng Bảo Khánh 2.0</title>
+<title>Học Cùng Dương Bảo Khánh 2.1</title>
 <style>
-body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(135deg,#5f8dff,#00d2a8);} 
-.container{max-width:500px;margin:auto;padding:15px}
-.header{background:linear-gradient(135deg,#6a8dff,#00c9a7);color:white;padding:25px 15px;border-radius:25px;text-align:center;box-shadow:0 10px 25px rgba(0,0,0,0.2)}
-.header h1{font-size:20px;white-space:nowrap;margin:0 0 15px 0}
-.score{background:white;color:#333;display:inline-block;padding:10px 25px;border-radius:40px;font-size:18px;font-weight:bold}
-.card{background:white;border-radius:20px;padding:20px;margin-top:20px;box-shadow:0 8px 20px rgba(0,0,0,0.15);text-align:center}
-.menu-btn{width:100%;padding:18px;margin:10px 0;border:none;border-radius:18px;font-size:20px;font-weight:bold;cursor:pointer;background:#f2f2f2}
-.menu-btn:hover{background:#e6e6e6}
-button.option{padding:14px 20px;margin:8px;border:none;border-radius:15px;font-size:20px;background:#ff7aa2;color:white;cursor:pointer}
-button.option:hover{opacity:0.85}
-.big{font-size:32px;margin:15px}
+body{font-family:Arial,Helvetica,sans-serif;background:#f2f6ff;margin:0;text-align:center}
+header{background:#4a6cf7;color:#fff;padding:18px;font-size:20px;font-weight:bold;box-shadow:0 4px 8px rgba(0,0,0,0.15)}
+.container{padding:20px}
+.card{background:#fff;padding:20px;border-radius:18px;box-shadow:0 6px 15px rgba(0,0,0,0.15);max-width:500px;margin:auto}
+button{padding:12px 18px;margin:8px;font-size:18px;border:none;border-radius:12px;background:#4a6cf7;color:white;cursor:pointer}
+button:hover{background:#3b57d1}
+.option{display:block;width:100%}
 .hidden{display:none}
-.back{margin-top:15px;background:#ccc;color:#333}
-canvas{position:fixed;top:0;left:0;pointer-events:none}
+#firework{font-size:60px}
 </style>
 </head>
 <body>
-<canvas id="fireworks"></canvas>
+<header>Chào mừng bé Dương Bảo Khánh 💙</header>
 <div class="container">
-<div class="header">
-<h1>Chào mừng bé Dương Bảo Khánh 💙</h1>
-<div class="score">⭐ Điểm: <span id="score">0</span></div>
+<div class="card">
+<h2 id="question"></h2>
+<div id="options"></div>
+<div id="firework"></div>
+<br>
+<button onclick="loadMath()">🔢 Toán</button>
+<button onclick="loadCompare()">🔼 So sánh</button>
+<button onclick="loadCount()">🚗 Tập đếm</button>
+<button onclick="loadVietnamese()">🔤 Học Chữ & Đánh Vần</button>
+</div>
 </div>
 
-<div id="menu" class="card">
-<button class="menu-btn" onclick="startCounting()">🚗 Tập Đếm</button>
-<button class="menu-btn" onclick="startCompare()">🔢 So Sánh > < =</button>
-<button class="menu-btn" onclick="startMath()">➕ Cộng Trừ (0-20)</button>
-<button class="menu-btn" onclick="startVietnamese()">🔤 Học Chữ & Đánh Vần</button>
-</div>
-
-<div id="game" class="card hidden"></div>
-</div>
+<audio id="clap" src="https://actions.google.com/sounds/v1/crowds/applause.ogg"></audio>
 
 <script>
-let score=0;
-const game=document.getElementById('game');
-const menu=document.getElementById('menu');
-const scoreEl=document.getElementById('score');
+let correctAnswer="";
 
-function speak(text){let msg=new SpeechSynthesisUtterance(text);msg.lang='vi-VN';speechSynthesis.speak(msg)}
+function speak(text){
+let msg=new SpeechSynthesisUtterance(text);
+let voices=speechSynthesis.getVoices();
+let vnVoice=voices.find(v=>v.lang.includes("vi") && v.name.toLowerCase().includes("nam"));
+if(!vnVoice){vnVoice=voices.find(v=>v.lang.includes("vi"));}
+if(vnVoice) msg.voice=vnVoice;
+msg.rate=0.9;
+speechSynthesis.speak(msg);
+}
 
-function cheerSound(){const ctx=new (window.AudioContext||window.webkitAudioContext)();let osc=ctx.createOscillator();let gain=ctx.createGain();osc.connect(gain);gain.connect(ctx.destination);osc.type='triangle';osc.frequency.value=500;gain.gain.value=0.2;osc.start();osc.frequency.exponentialRampToValueAtTime(1000,ctx.currentTime+0.3);osc.stop(ctx.currentTime+0.3)}
+function showQuestion(q,options,answer){
+document.getElementById("question").innerText=q;
+let optDiv=document.getElementById("options");
+optDiv.innerHTML="";
+correctAnswer=answer;
+options.forEach(o=>{
+let btn=document.createElement("button");
+btn.className="option";
+btn.innerText=o;
+btn.onclick=()=>checkAnswer(o);
+optDiv.appendChild(btn);
+});
+speak(q);
+}
 
-function addScore(){score++;scoreEl.innerText=score;cheerSound();launchFireworks();}
+function checkAnswer(ans){
+if(ans==correctAnswer){
+document.getElementById("firework").innerText="🎆🎆🎆";
+document.getElementById("clap").play();
+speak("Giỏi quá! Dương Bảo Khánh xuất sắc!");
+setTimeout(()=>{document.getElementById("firework").innerText="";},2000);
+}else{
+speak("Chưa đúng rồi con thử lại nhé");
+}
+}
 
-function backMenu(){game.classList.add('hidden');menu.classList.remove('hidden');}
+function loadMath(){
+let a=Math.floor(Math.random()*10)+1;
+let b=Math.floor(Math.random()*10);
+let isAdd=Math.random()>0.5;
+if(isAdd){
+let result=a+b;
+let opts=[result,result+1,result-1].sort(()=>Math.random()-0.5);
+showQuestion(`${a} + ${b} = ?`,opts,result);
+}else{
+if(a<b){[a,b]=[b,a];}
+let result=a-b;
+let opts=[result,result+1,result-1].sort(()=>Math.random()-0.5);
+showQuestion(`${a} - ${b} = ?`,opts,result);
+}
+}
 
-function startCounting(){menu.classList.add('hidden');game.classList.remove('hidden');let num=Math.floor(Math.random()*10)+1;let emojis='🚗'.repeat(num);let options=[num,num+1,num-1].sort(()=>Math.random()-0.5);
- game.innerHTML=`<div class='big'>${emojis}</div><div>Có bao nhiêu chiếc xe?</div>`;
- speak('Có bao nhiêu chiếc xe?');
- options.forEach(o=>{
- let btn=document.createElement('button');btn.className='option';btn.innerText=o;
- btn.onclick=()=>{if(o===num){addScore();speak('Giỏi lắm Bảo Khánh');}else{speak('Thử lại nhé');}startCounting()};
- game.appendChild(btn);
- });
- addBack();}
+function loadCompare(){
+let a=Math.floor(Math.random()*20);
+let b=Math.floor(Math.random()*20);
+let correct=a>b?">":a<b?"<":"=";
+showQuestion(`${a} ? ${b}`,[">","<","="],correct);
+}
 
-function startCompare(){menu.classList.add('hidden');game.classList.remove('hidden');let a=Math.floor(Math.random()*50);let b=Math.floor(Math.random()*50);
- game.innerHTML=`<div class='big'>${a} ? ${b}</div><div>Chọn dấu đúng</div>`;
- speak(`So sánh ${a} và ${b}`);
- ['>','<','='].forEach(sign=>{
- let btn=document.createElement('button');btn.className='option';btn.innerText=sign;
- btn.onclick=()=>{if((a>b&&sign==='>')||(a<b&&sign==='<')||(a===b&&sign==='=')){addScore();speak('Đúng rồi');}else{speak('Sai rồi');}startCompare()};
- game.appendChild(btn);
- });
- addBack();}
+function loadCount(){
+let count=Math.floor(Math.random()*9)+1;
+let cars="🚗".repeat(count);
+let opts=[count,count+1,count-1].filter(n=>n>0).sort(()=>Math.random()-0.5);
+showQuestion(`Có bao nhiêu xe: ${cars}`,opts,count);
+}
 
-function startMath(){menu.classList.add('hidden');game.classList.remove('hidden');let a=Math.floor(Math.random()*20);let b=Math.floor(Math.random()*20);let plus=Math.random()>0.5;let result=plus?a+b:a-b;if(result<0||result>20){startMath();return}
- game.innerHTML=`<div class='big'>${a} ${plus?'+':'-'} ${b} = ?</div>`;
- speak(`${a} ${plus?'cộng':'trừ'} ${b} bằng bao nhiêu`);
- let options=[result,result+1,result-1].sort(()=>Math.random()-0.5);
- options.forEach(o=>{
- let btn=document.createElement('button');btn.className='option';btn.innerText=o;
- btn.onclick=()=>{if(o===result){addScore();speak('Chính xác');}else{speak('Chưa đúng');}startMath()};
- game.appendChild(btn);
- });
- addBack();}
+function loadVietnamese(){
+let questions=[
+{q:"Chữ nào là chữ ơ?",opts:["a","ơ","e"],a:"ơ"},
+{q:"Chữ nào là chữ â?",opts:["â","a","ă"],a:"â"},
+{q:"Chữ nào là chữ ê?",opts:["ê","e","i"],a:"ê"},
+{q:"Chữ nào là chữ ô?",opts:["o","ô","ơ"],a:"ô"},
 
-function startVietnamese(){menu.classList.add('hidden');game.classList.remove('hidden');let letters=['A','Ă','Â','B','C','D','Đ','E','Ê','G','H','I','K','L','M','N','O','Ô','Ơ','P','Q','R','S','T','U','Ư','V','X','Y'];
- let correct=letters[Math.floor(Math.random()*letters.length)];
- game.innerHTML=`<div class='big'>Chọn chữ: ${correct}</div>`;
- speak(`Chọn chữ ${correct}`);
- letters.sort(()=>Math.random()-0.5).slice(0,6).forEach(l=>{
- let btn=document.createElement('button');btn.className='option';btn.innerText=l;
- btn.onclick=()=>{if(l===correct){addScore();speak('Giỏi lắm');}else{speak('Sai rồi');}startVietnamese()};
- game.appendChild(btn);
- });
- addBack();}
+// Điền chữ còn thiếu
+{q:"Điền chữ còn thiếu: c _ n (con)",opts:["o","a","u"],a:"o"},
+{q:"Điền chữ: b _ n (bàn)",opts:["à","a","o"],a:"à"},
+{q:"Điền chữ: m _ o (mèo)",opts:["e","è","a"],a:"è"},
+{q:"Điền chữ: c _ (cá)",opts:["a","á","o"],a:"á"},
 
-function addBack(){let back=document.createElement('button');back.className='option back';back.innerText='⬅ Quay lại';back.onclick=backMenu;game.appendChild(back)}
+// Ghép vần đơn giản
+{q:"Ghép đúng: b + a = ?",opts:["ba","be","bo"],a:"ba"},
+{q:"Ghép đúng: c + á = ?",opts:["cá","ca","cô"],a:"cá"},
+{q:"Ghép đúng: m + e = ?",opts:["me","mê","ma"],a:"me"},
+{q:"Ghép đúng: l + an = ?",opts:["lan","len","lon"],a:"lan"},
 
-// Fireworks
-const canvas=document.getElementById('fireworks');
-const ctx=canvas.getContext('2d');canvas.width=window.innerWidth;canvas.height=window.innerHeight;
-function launchFireworks(){for(let i=0;i<30;i++){setTimeout(()=>{
- let x=Math.random()*canvas.width;
- let y=Math.random()*canvas.height/2;
- let radius=Math.random()*4+2;
- ctx.beginPath();ctx.arc(x,y,radius,0,Math.PI*2);
- ctx.fillStyle=`hsl(${Math.random()*360},100%,50%)`;
- ctx.fill();
- setTimeout(()=>ctx.clearRect(0,0,canvas.width,canvas.height),500);
- },i*20)}}
+// Ghép phụ âm + vần nâng cao hơn
+{q:"Ghép đúng: th + ơ = ?",opts:["thơ","tho","tha"],a:"thơ"},
+{q:"Ghép đúng: ch + a = ?",opts:["cha","cho","che"],a:"cha"},
+{q:"Ghép đúng: tr + ăng = ?",opts:["trăng","trang","trong"],a:"trăng"},
+{q:"Ghép đúng: ng + ô = ?",opts:["ngô","ngo","ngơ"],a:"ngô"},
+
+// Nhận diện chữ đầu
+{q:"Chữ đầu của từ 'mèo' là gì?",opts:["m","n","b"],a:"m"},
+{q:"Chữ đầu của từ 'cá' là gì?",opts:["c","k","b"],a:"c"},
+{q:"Chữ đầu của từ 'bàn' là gì?",opts:["b","d","m"],a:"b"},
+
+// So sánh chữ có dấu
+{q:"Chọn chữ có dấu sắc",opts:["a","á","à"],a:"á"},
+{q:"Chọn chữ có dấu huyền",opts:["e","è","é"],a:"è"},
+{q:"Chọn chữ có dấu nặng",opts:["o","ọ","ó"],a:"ọ"}
+];
+
+let random=questions[Math.floor(Math.random()*questions.length)];
+showQuestion(random.q,random.opts,random.a);
+}
+
+window.speechSynthesis.onvoiceschanged=()=>{};
 </script>
 </body>
 </html>
