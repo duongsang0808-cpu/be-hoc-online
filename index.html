@@ -1,356 +1,293 @@
-// =======================
-// GIỌNG ĐỌC TIẾNG VIỆT
-// =======================
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-function formatSpeak(text){
-return text
-.replace(/\+/g," cộng ")
-.replace(/-/g," trừ ")
-.replace(/x/g," nhân ")
-.replace(/\*/g," nhân ")
-.replace(/\//g," chia ");
+<title>Bé Học Online</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f2f4f8;
+text-align:center;
+padding:20px;
+}
+
+.header{
+background:linear-gradient(45deg,#6a5af9,#2ec9b0);
+color:white;
+padding:30px;
+border-radius:20px;
+font-size:28px;
+font-weight:bold;
+}
+
+.score{
+margin-top:10px;
+background:white;
+display:inline-block;
+padding:10px 25px;
+border-radius:20px;
+font-size:20px;
+}
+
+.card{
+background:white;
+padding:25px;
+border-radius:20px;
+margin-top:25px;
+box-shadow:0 5px 10px rgba(0,0,0,0.1);
+}
+
+button{
+font-size:24px;
+padding:15px 25px;
+margin:10px;
+border:none;
+border-radius:15px;
+background:#ff6b9a;
+color:white;
+cursor:pointer;
+}
+
+button:hover{
+background:#ff4c82;
+}
+
+.question{
+font-size:28px;
+margin-bottom:20px;
+}
+
+.emoji{
+font-size:40px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+Chào mừng bé <span style="white-space:nowrap;">Dương Bảo Khánh</span> 💙
+<div class="score">⭐ Điểm: <span id="score">0</span></div>
+</div>
+
+<div class="card">
+
+<div id="question" class="question"></div>
+
+<div id="emoji"></div>
+
+<div id="answers"></div>
+
+</div>
+
+<script>
+
+let score=0
+
+function updateScore(){
+document.getElementById("score").innerText=score
 }
 
 function speak(text){
 
-if(!window.speechSynthesis) return;
+window.speechSynthesis.cancel()
 
-speechSynthesis.cancel();
+let msg=new SpeechSynthesisUtterance(text)
 
-text = formatSpeak(text);
+msg.lang="vi-VN"
 
-const utter = new SpeechSynthesisUtterance(text);
+msg.rate=0.9
 
-utter.lang = "vi-VN";
-utter.rate = 0.9;
-utter.pitch = 1;
-
-const voices = speechSynthesis.getVoices();
-
-const viVoice =
-voices.find(v=>v.lang==="vi-VN") ||
-voices.find(v=>v.lang.includes("vi"));
-
-if(viVoice) utter.voice = viVoice;
-
-speechSynthesis.speak(utter);
+speechSynthesis.speak(msg)
 
 }
 
+function clap(){
 
+let audio=new Audio("https://www.soundjay.com/human/applause-8.mp3")
 
-// =======================
-// ÂM THANH
-// =======================
+audio.play()
 
-const clapSound = new Audio(
-"https://cdn.pixabay.com/download/audio/2022/03/15/audio_7b2eeb2b47.mp3"
-);
-
-
-
-// =======================
-// PHÁO HOA
-// =======================
+}
 
 function firework(){
 
-const canvas = document.getElementById("firework");
+for(let i=0;i<20;i++){
 
-if(!canvas) return;
+let div=document.createElement("div")
 
-const ctx = canvas.getContext("2d");
+div.innerHTML="🎉"
 
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+div.style.position="fixed"
 
-for(let i=0;i<100;i++){
+div.style.left=Math.random()*100+"%"
 
-ctx.beginPath();
+div.style.top=Math.random()*100+"%"
 
-ctx.arc(
-Math.random()*canvas.width,
-Math.random()*canvas.height,
-Math.random()*5,
-0,
-Math.PI*2
-);
+div.style.fontSize="30px"
 
-ctx.fillStyle =
-"hsl("+Math.random()*360+",100%,50%)";
+document.body.appendChild(div)
 
-ctx.fill();
+setTimeout(()=>div.remove(),1000)
 
 }
 
-setTimeout(()=>{
-ctx.clearRect(0,0,canvas.width,canvas.height);
-},800);
+}
+
+function nextQuestion(){
+
+let type=Math.floor(Math.random()*3)
+
+if(type==0) countQuestion()
+if(type==1) compareQuestion()
+if(type==2) mathQuestion()
 
 }
 
+function countQuestion(){
 
+let number=Math.floor(Math.random()*5)+1
 
-// =======================
-// CÂU HỎI TOÁN
-// =======================
+let emoji="🚗"
 
-let currentQuestion = 0;
+let html=""
 
-let questions = [
+for(let i=0;i<number;i++){
 
-{
-q:"3 + 2 = ?",
-a:["4","5","6"],
-correct:1
-},
-
-{
-q:"5 - 1 = ?",
-a:["3","4","5"],
-correct:1
-},
-
-{
-q:"2 + 4 = ?",
-a:["5","6","7"],
-correct:1
-},
-
-{
-q:"7 - 3 = ?",
-a:["3","4","5"],
-correct:1
-},
-
-{
-q:"6 + 1 = ?",
-a:["6","7","8"],
-correct:1
-}
-
-];
-
-
-
-function loadQuestion(){
-
-if(currentQuestion >= questions.length){
-
-currentQuestion = 0;
+html+=emoji+" "
 
 }
 
-let q = questions[currentQuestion];
+document.getElementById("emoji").innerHTML=html
 
-document.getElementById("question").innerText = q.q;
+document.getElementById("question").innerText="Có bao nhiêu chiếc xe ô tô?"
 
-speak(q.q);
+speak("Có bao nhiêu chiếc xe ô tô")
 
-let answers = document.getElementById("answers");
-
-answers.innerHTML="";
-
-q.a.forEach((text,index)=>{
-
-let btn = document.createElement("button");
-
-btn.innerText=text;
-
-btn.onclick = ()=>checkAnswer(index);
-
-answers.appendChild(btn);
-
-});
-
-}
-
-
-
-function checkAnswer(index){
-
-let q = questions[currentQuestion];
-
-if(index===q.correct){
-
-clapSound.play();
-
-firework();
-
-speak("Đúng rồi giỏi lắm");
-
-}else{
-
-speak("Chưa đúng thử lại");
-
-}
-
-setTimeout(()=>{
-
-currentQuestion++;
-
-loadQuestion();
-
-},1500);
-
-}
-
-
-
-// =======================
-// ĐẾM HÌNH
-// =======================
-
-function countCars(){
-
-let count = Math.floor(Math.random()*5)+1;
-
-let area = document.getElementById("imageArea");
-
-area.innerHTML="";
-
-for(let i=0;i<count;i++){
-
-let img = document.createElement("img");
-
-img.src =
-"https://cdn-icons-png.flaticon.com/512/743/743131.png";
-
-img.style.width="80px";
-
-img.style.margin="10px";
-
-area.appendChild(img);
-
-}
-
-let q="Có bao nhiêu chiếc xe ô tô";
-
-document.getElementById("question").innerText=q;
-
-speak(q);
-
-let answers = document.getElementById("answers");
-
-answers.innerHTML="";
+let answers=""
 
 for(let i=1;i<=5;i++){
 
-let btn=document.createElement("button");
+answers+=`<button onclick="check(${i},${number})">${i}</button>`
 
-btn.innerText=i;
+}
 
-btn.onclick=()=>{
+document.getElementById("answers").innerHTML=answers
 
-if(i===count){
+}
 
-clapSound.play();
+function compareQuestion(){
 
-firework();
+let a=Math.floor(Math.random()*10)
 
-speak("Chính xác");
+let b=Math.floor(Math.random()*10)
+
+document.getElementById("emoji").innerHTML=a+" ? "+b
+
+document.getElementById("question").innerText="Chọn dấu đúng"
+
+speak("So sánh hai số")
+
+document.getElementById("answers").innerHTML=`
+
+<button onclick="checkSign('>',${a},${b})">></button>
+
+<button onclick="checkSign('<',${a},${b})"><</button>
+
+<button onclick="checkSign('=',${a},${b})">=</button>
+
+`
+
+}
+
+function mathQuestion(){
+
+let a=Math.floor(Math.random()*10)
+
+let b=Math.floor(Math.random()*10)
+
+let correct=a+b
+
+document.getElementById("emoji").innerHTML=a+" + "+b
+
+document.getElementById("question").innerText="Tính phép cộng"
+
+speak(a+" cộng "+b+" bằng bao nhiêu")
+
+let answers=""
+
+for(let i=0;i<4;i++){
+
+let num=Math.floor(Math.random()*20)
+
+answers+=`<button onclick="check(${num},${correct})">${num}</button>`
+
+}
+
+answers+=`<button onclick="check(${correct},${correct})">${correct}</button>`
+
+document.getElementById("answers").innerHTML=answers
+
+}
+
+function check(ans,correct){
+
+if(ans==correct){
+
+score++
+
+updateScore()
+
+clap()
+
+firework()
+
+setTimeout(nextQuestion,800)
 
 }else{
 
-speak("Sai rồi");
-
-}
-
-setTimeout(()=>countCars(),1500);
-
-};
-
-answers.appendChild(btn);
+alert("Sai rồi, thử lại nha")
 
 }
 
 }
 
+function checkSign(sign,a,b){
 
+let correct="="
 
-// =======================
-// HỌC CHỮ
-// =======================
+if(a>b) correct=">"
 
-const letters = [
-"A","Ă","Â","B","C","D","Đ","E","Ê","G","H","I",
-"K","L","M","N","O","Ô","Ơ","P","Q","R","S","T",
-"U","Ư","V","X","Y"
-];
+if(a<b) correct="<"
 
-function learnLetter(){
+if(sign==correct){
 
-let letter =
-letters[Math.floor(Math.random()*letters.length)];
+score++
 
-document.getElementById("question").innerText =
-"Chọn chữ: "+letter;
+updateScore()
 
-speak("Chọn chữ "+letter);
+clap()
 
-let answers = document.getElementById("answers");
+firework()
 
-answers.innerHTML="";
-
-let options = [];
-
-options.push(letter);
-
-while(options.length<4){
-
-let l =
-letters[Math.floor(Math.random()*letters.length)];
-
-if(!options.includes(l)) options.push(l);
-
-}
-
-options.sort(()=>Math.random()-0.5);
-
-options.forEach(l=>{
-
-let btn=document.createElement("button");
-
-btn.innerText=l;
-
-btn.onclick=()=>{
-
-if(l===letter){
-
-clapSound.play();
-
-firework();
-
-speak("Đúng rồi");
+setTimeout(nextQuestion,800)
 
 }else{
 
-speak("Sai rồi");
+alert("Sai rồi")
 
 }
 
-setTimeout(()=>learnLetter(),1500);
-
-};
-
-answers.appendChild(btn);
-
-});
-
 }
 
+nextQuestion()
 
+</script>
 
-// =======================
-// KHỞI ĐỘNG
-// =======================
-
-window.onload=()=>{
-
-setTimeout(()=>{
-
-loadQuestion();
-
-},500);
-
-};
+</body>
+</html>
