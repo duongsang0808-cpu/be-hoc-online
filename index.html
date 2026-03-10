@@ -4,45 +4,52 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Bé Học Online</title>
+<title>Bé Bảo Khánh Học Bài</title>
 
 <style>
 
 body{
 font-family:Arial;
-background:#f2f4f8;
+background:linear-gradient(135deg,#6a5af9,#2ec9b0);
 text-align:center;
+margin:0;
 padding:20px;
+color:white;
 }
 
-.header{
-background:linear-gradient(45deg,#6a5af9,#2ec9b0);
-color:white;
-padding:30px;
-border-radius:20px;
-font-size:28px;
+.title{
+font-size:34px;
 font-weight:bold;
+margin-bottom:10px;
 }
 
 .score{
-margin-top:10px;
-background:white;
-display:inline-block;
-padding:10px 25px;
-border-radius:20px;
 font-size:20px;
+background:white;
+color:black;
+padding:10px 20px;
+border-radius:20px;
+display:inline-block;
 }
 
 .card{
 background:white;
-padding:25px;
-border-radius:20px;
+color:black;
 margin-top:25px;
-box-shadow:0 5px 10px rgba(0,0,0,0.1);
+padding:25px;
+border-radius:25px;
+max-width:500px;
+margin-left:auto;
+margin-right:auto;
+}
+
+.question{
+font-size:28px;
+margin-bottom:20px;
 }
 
 button{
-font-size:24px;
+font-size:22px;
 padding:15px 25px;
 margin:10px;
 border:none;
@@ -56,13 +63,13 @@ button:hover{
 background:#ff4c82;
 }
 
-.question{
-font-size:28px;
-margin-bottom:20px;
+.emoji{
+font-size:50px;
+margin-bottom:15px;
 }
 
-.emoji{
-font-size:40px;
+.menu button{
+background:#6a5af9;
 }
 
 </style>
@@ -70,18 +77,29 @@ font-size:40px;
 
 <body>
 
-<div class="header">
-Chào mừng bé <span style="white-space:nowrap;">Dương Bảo Khánh</span> 💙
-<div class="score">⭐ Điểm: <span id="score">0</span></div>
+<div class="title">🎓 Bé Dương Bảo Khánh Học Bài</div>
+
+<div class="score">
+⭐ Điểm: <span id="score">0</span>
 </div>
 
 <div class="card">
 
-<div id="question" class="question"></div>
+<div class="menu" id="menu">
 
-<div id="emoji"></div>
+<button onclick="startAnimal()">🐶 Đếm con vật</button>
 
-<div id="answers"></div>
+<button onclick="startMath()">➕ Toán học</button>
+
+<button onclick="startCompare()">🔢 So sánh</button>
+
+<button onclick="startAlphabet()">🔤 Học chữ</button>
+
+<button onclick="startPuzzle()">🧠 Ghép hình</button>
+
+</div>
+
+<div id="game"></div>
 
 </div>
 
@@ -95,7 +113,7 @@ document.getElementById("score").innerText=score
 
 function speak(text){
 
-window.speechSynthesis.cancel()
+speechSynthesis.cancel()
 
 let msg=new SpeechSynthesisUtterance(text)
 
@@ -139,105 +157,25 @@ setTimeout(()=>div.remove(),1000)
 
 }
 
-function nextQuestion(){
+function praise(){
 
-let type=Math.floor(Math.random()*3)
+let praises=[
+"Con giỏi quá",
+"Bảo Khánh giỏi quá",
+"Giỏi lắm",
+"Tuyệt vời",
+"Chính xác"
+]
 
-if(type==0) countQuestion()
-if(type==1) compareQuestion()
-if(type==2) mathQuestion()
+let say=praises[Math.floor(Math.random()*praises.length)]
 
-}
-
-function countQuestion(){
-
-let number=Math.floor(Math.random()*5)+1
-
-let emoji="🚗"
-
-let html=""
-
-for(let i=0;i<number;i++){
-
-html+=emoji+" "
+speak(say)
 
 }
 
-document.getElementById("emoji").innerHTML=html
+function correct(){
 
-document.getElementById("question").innerText="Có bao nhiêu chiếc xe ô tô?"
-
-speak("Có bao nhiêu chiếc xe ô tô")
-
-let answers=""
-
-for(let i=1;i<=5;i++){
-
-answers+=`<button onclick="check(${i},${number})">${i}</button>`
-
-}
-
-document.getElementById("answers").innerHTML=answers
-
-}
-
-function compareQuestion(){
-
-let a=Math.floor(Math.random()*10)
-
-let b=Math.floor(Math.random()*10)
-
-document.getElementById("emoji").innerHTML=a+" ? "+b
-
-document.getElementById("question").innerText="Chọn dấu đúng"
-
-speak("So sánh hai số")
-
-document.getElementById("answers").innerHTML=`
-
-<button onclick="checkSign('>',${a},${b})">></button>
-
-<button onclick="checkSign('<',${a},${b})"><</button>
-
-<button onclick="checkSign('=',${a},${b})">=</button>
-
-`
-
-}
-
-function mathQuestion(){
-
-let a=Math.floor(Math.random()*10)
-
-let b=Math.floor(Math.random()*10)
-
-let correct=a+b
-
-document.getElementById("emoji").innerHTML=a+" + "+b
-
-document.getElementById("question").innerText="Tính phép cộng"
-
-speak(a+" cộng "+b+" bằng bao nhiêu")
-
-let answers=""
-
-for(let i=0;i<4;i++){
-
-let num=Math.floor(Math.random()*20)
-
-answers+=`<button onclick="check(${num},${correct})">${num}</button>`
-
-}
-
-answers+=`<button onclick="check(${correct},${correct})">${correct}</button>`
-
-document.getElementById("answers").innerHTML=answers
-
-}
-
-function check(ans,correct){
-
-if(ans==correct){
+praise()
 
 score++
 
@@ -247,13 +185,137 @@ clap()
 
 firework()
 
-setTimeout(nextQuestion,800)
-
-}else{
-
-alert("Sai rồi, thử lại nha")
+setTimeout(()=>location.reload(),1500)
 
 }
+
+function wrong(){
+
+speak("Sai rồi, thử lại con nhé")
+
+}
+
+function startAnimal(){
+
+let number=Math.floor(Math.random()*5)+1
+
+let animals=["🐶","🐱","🐰","🐼"]
+
+let animal=animals[Math.floor(Math.random()*animals.length)]
+
+let html=""
+
+for(let i=0;i<number;i++) html+=animal+" "
+
+document.getElementById("game").innerHTML=
+
+`<div class="question">Có bao nhiêu con?</div>
+<div class="emoji">${html}</div>
+<div>
+<button onclick="check(${number},${number})">${number}</button>
+<button onclick="check(${number+1},${number})">${number+1}</button>
+<button onclick="check(${number-1},${number})">${number-1}</button>
+</div>`
+
+speak("Có bao nhiêu con")
+
+}
+
+function startMath(){
+
+let a=Math.floor(Math.random()*10)
+
+let b=Math.floor(Math.random()*10)
+
+let correctAns=a+b
+
+document.getElementById("game").innerHTML=
+
+`<div class="question">Tính phép cộng</div>
+<div class="emoji">${a} + ${b}</div>
+<div>
+<button onclick="check(${correctAns},${correctAns})">${correctAns}</button>
+<button onclick="check(${correctAns+1},${correctAns})">${correctAns+1}</button>
+<button onclick="check(${correctAns-1},${correctAns})">${correctAns-1}</button>
+</div>`
+
+speak(a+" cộng "+b+" bằng bao nhiêu")
+
+}
+
+function startCompare(){
+
+let a=Math.floor(Math.random()*10)
+
+let b=Math.floor(Math.random()*10)
+
+document.getElementById("game").innerHTML=
+
+`<div class="question">Chọn dấu đúng</div>
+<div class="emoji">${a} ? ${b}</div>
+<div>
+<button onclick="checkSign('>',${a},${b})">></button>
+<button onclick="checkSign('<',${a},${b})"><</button>
+<button onclick="checkSign('=',${a},${b})">=</button>
+</div>`
+
+speak("So sánh hai số")
+
+}
+
+function startAlphabet(){
+
+let letters=["a","ă","â","b","c","d","đ","e","ê"]
+
+let letter=letters[Math.floor(Math.random()*letters.length)]
+
+document.getElementById("game").innerHTML=
+
+`<div class="question">Chọn chữ đúng</div>
+<div class="emoji">${letter.toUpperCase()}</div>
+<div>
+<button onclick="checkLetter('${letter}','${letter}')">${letter}</button>
+<button onclick="checkLetter('o','${letter}')">o</button>
+<button onclick="checkLetter('u','${letter}')">u</button>
+</div>`
+
+speak("Chữ "+letter)
+
+}
+
+function startPuzzle(){
+
+let animals=["🐶","🐱","🐰"]
+
+let a=animals[Math.floor(Math.random()*animals.length)]
+
+let b=animals[Math.floor(Math.random()*animals.length)]
+
+document.getElementById("game").innerHTML=
+
+`<div class="question">Chọn hình giống nhau</div>
+<div class="emoji">${a} ?</div>
+<div>
+<button onclick="check('${a}','${a}')">${a}</button>
+<button onclick="check('${b}','${a}')">${b}</button>
+<button onclick="check('🐼','${a}')">🐼</button>
+</div>`
+
+speak("Chọn hình giống nhau")
+
+}
+
+function check(ans,correctAns){
+
+if(ans==correctAns) correct()
+else wrong()
+
+}
+
+function checkLetter(ans,correctAns){
+
+if(ans==correctAns) correct()
+else wrong()
 
 }
 
@@ -262,30 +324,12 @@ function checkSign(sign,a,b){
 let correct="="
 
 if(a>b) correct=">"
-
 if(a<b) correct="<"
 
-if(sign==correct){
-
-score++
-
-updateScore()
-
-clap()
-
-firework()
-
-setTimeout(nextQuestion,800)
-
-}else{
-
-alert("Sai rồi")
+if(sign==correct) correct()
+else wrong()
 
 }
-
-}
-
-nextQuestion()
 
 </script>
 
