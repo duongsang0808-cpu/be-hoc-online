@@ -37,7 +37,7 @@ background:white;
 color:black;
 padding:25px;
 border-radius:25px;
-max-width:550px;
+max-width:600px;
 margin:auto;
 margin-top:25px;
 }
@@ -90,7 +90,7 @@ background:#6a5af9;
 <button onclick="startCar()">🚗 Đếm xe</button>
 <button onclick="startMath()">➕ Toán học</button>
 <button onclick="startCompare()">🔢 So sánh</button>
-<button onclick="startSpell()">🔤 Học đánh vần</button>
+<button onclick="startSpell()">🔤 Nghe và chọn chữ</button>
 
 </div>
 
@@ -130,7 +130,7 @@ audio.play()
 
 function firework(){
 
-for(let i=0;i<30;i++){
+for(let i=0;i<40;i++){
 
 let div=document.createElement("div")
 
@@ -155,8 +155,8 @@ let praises=[
 "Con giỏi quá",
 "Bảo Khánh giỏi quá",
 "Giỏi lắm",
-"Chính xác",
-"Tuyệt vời"
+"Tuyệt vời",
+"Chính xác"
 ]
 
 let say=praises[Math.floor(Math.random()*praises.length)]
@@ -195,7 +195,6 @@ speak("Sai rồi, thử lại con nhé")
 function createCountGame(list,name){
 
 let number=Math.floor(Math.random()*5)+1
-
 let item=list[Math.floor(Math.random()*list.length)]
 
 let html=""
@@ -292,46 +291,58 @@ function startSpell(){
 currentGame="spell"
 
 let words=[
-["BA","BA"],
-["BÀ","BA HUYỀN"],
-["BÁ","BA SẮC"],
-["BẠ","BA NẶNG"],
-["BẢ","BA HỎI"],
-["BÃ","BA NGÃ"]
+
+["BA","bờ a ba"],
+["BÀ","bờ a ba huyền bà"],
+["BÁ","bờ a ba sắc bá"],
+["BẠ","bờ a ba nặng bạ"],
+["MẸ","mờ e me nặng mẹ"],
+["LY","lờ y ly"],
+["ĐI","đờ i đi"],
+["XA","xờ a xa"],
+["HỒ","hờ ô hô huyền hồ"],
+["CÔ","cờ ô cô"],
+["CỬ","cờ ư cư hỏi cử"],
+["TẠ","tờ a ta nặng tạ"],
+["MÁ","mờ a ma sắc má"],
+["MÀ","mờ a ma huyền mà"],
+["LÁ","lờ a la sắc lá"],
+["ĐÁ","đờ a đa sắc đá"]
+
 ]
 
 let w=words[Math.floor(Math.random()*words.length)]
 
+let correctWord=w[0]
+let sound=w[1]
+
 document.getElementById("game").innerHTML=`
 
-<div class="question">Chọn chữ đúng</div>
+<div class="question">Nghe và chọn chữ đúng</div>
 
-<div class="emoji">${w[0]}</div>
+<div class="emoji">🔊</div>
 
 <div>
-<button onclick="checkWord('${w[0]}','${w[0]}')">${w[0]}</button>
-<button onclick="checkWord('CA','${w[0]}')">CA</button>
-<button onclick="checkWord('DA','${w[0]}')">DA</button>
+<button onclick="checkWord('${correctWord}','${correctWord}')">${correctWord}</button>
+<button onclick="checkWord('BA','${correctWord}')">BA</button>
+<button onclick="checkWord('CA','${correctWord}')">CA</button>
+<button onclick="checkWord('MA','${correctWord}')">MA</button>
 </div>
 
 `
 
-speak("Chữ "+w[0])
+speak(sound)
 
 }
 
 function check(ans,correctAns){
-
 if(ans==correctAns) correct()
 else wrong()
-
 }
 
 function checkWord(ans,correctAns){
-
 if(ans==correctAns) correct()
 else wrong()
-
 }
 
 function checkSign(sign,a,b){
