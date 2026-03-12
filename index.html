@@ -95,6 +95,22 @@ margin-bottom:15px;
 
 let score=0
 let currentGame=""
+let streak=0
+let lastAnimal=-1
+
+const music=new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8b05f6e6b.mp3?filename=kids-music-112191.mp3")
+music.loop=true
+music.volume=0.08
+
+window.onload=function(){
+
+music.play()
+
+setTimeout(()=>{
+speak("Chào mừng bé Dương Bảo Khánh")
+},800)
+
+}
 
 function speak(t){
 
@@ -111,14 +127,14 @@ speechSynthesis.speak(msg)
 function clap(){
 
 let audio=new Audio("https://www.soundjay.com/human/applause-8.mp3")
-
+audio.volume=0.3
 audio.play()
 
 }
 
 function firework(){
 
-for(let i=0;i<30;i++){
+for(let i=0;i<25;i++){
 
 let d=document.createElement("div")
 
@@ -152,23 +168,43 @@ if(currentGame=="letter") startLetter()
 
 }
 
+function praise(){
+
+let arr=[
+"Bảo Khánh giỏi quá",
+"Giỏi lắm con"
+]
+
+let s=arr[Math.floor(Math.random()*arr.length)]
+
+speak(s)
+
+}
+
 function correct(){
 
 score++
+streak++
 
 document.getElementById("score").innerText=score
 
-speak("Bảo Khánh giỏi quá")
+firework()
+
+if(streak>=5){
 
 clap()
+praise()
+streak=0
 
-firework()
+}
 
 next()
 
 }
 
 function wrong(){
+
+streak=0
 
 speak("Sai rồi thử lại con nhé")
 
@@ -192,7 +228,15 @@ function startAnimal(){
 
 currentGame="animal"
 
-let n=Math.floor(Math.random()*5)+1
+let n
+
+do{
+
+n=Math.floor(Math.random()*5)+1
+
+}while(n==lastAnimal)
+
+lastAnimal=n
 
 let html=""
 
@@ -353,11 +397,8 @@ currentGame="missing"
 let words=[
 
 ["BA","A"],
-
 ["BÉ","É"],
-
 ["CÔ","Ô"],
-
 ["LY","Y"]
 
 ]
