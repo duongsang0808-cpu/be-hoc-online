@@ -1,60 +1,49 @@
 <!DOCTYPE html>
+
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Bé Bảo Khánh Học Thông Minh</title>
+<title>Bé Bảo Khánh Học Vui</title>
 
 <style>
 
 body{
 font-family:Arial;
-background:linear-gradient(135deg,#6a5af9,#2ec9b0);
+background:linear-gradient(135deg,#ff9a9e,#fad0c4);
+text-align:center;
 margin:0;
 padding:20px;
-text-align:center;
-color:white;
 }
 
 .title{
 font-size:34px;
 font-weight:bold;
+color:#333;
 }
 
 .score{
-background:white;
-color:black;
+background:#fff;
 display:inline-block;
 padding:10px 20px;
 border-radius:20px;
-margin-top:10px;
 font-size:20px;
+margin-top:10px;
 }
 
 .card{
 background:white;
-color:black;
 padding:25px;
 border-radius:25px;
-max-width:600px;
+max-width:650px;
 margin:auto;
 margin-top:25px;
 }
 
-.question{
-font-size:28px;
-margin-bottom:15px;
-}
-
-.emoji{
-font-size:50px;
-margin-bottom:20px;
-}
-
 button{
 font-size:22px;
-padding:14px 24px;
+padding:14px 22px;
 margin:8px;
 border:none;
 border-radius:15px;
@@ -71,13 +60,23 @@ background:#ff4c82;
 background:#6a5af9;
 }
 
+.question{
+font-size:28px;
+margin-bottom:15px;
+}
+
+.emoji{
+font-size:60px;
+margin-bottom:15px;
+}
+
 </style>
 
 </head>
 
 <body>
 
-<div class="title">🎓 Bé Dương Bảo Khánh Học Bài</div>
+<div class="title">🎓 Bé Dương Bảo Khánh</div>
 
 <div class="score">⭐ Điểm: <span id="score">0</span></div>
 
@@ -85,12 +84,7 @@ background:#6a5af9;
 
 <div class="menu">
 
-<button onclick="startAnimal()">🐶 Đếm con vật</button>
-<button onclick="startFruit()">🍎 Đếm trái cây</button>
-<button onclick="startCar()">🚗 Đếm xe</button>
-<button onclick="startMath()">➕ Toán học</button>
-<button onclick="startCompare()">🔢 So sánh</button>
-<button onclick="startSpell()">🔤 Nghe và chọn chữ</button>
+<button onclick="startAnimal()">🐶 Đếm con vật</button> <button onclick="startMath()">➕➖ Toán</button> <button onclick="startCompare()">🔢 So sánh</button> <button onclick="startSpell()">🔤 Đánh vần</button> <button onclick="startMissing()">🧩 Chữ còn thiếu</button> <button onclick="startLetter()">🧠 Nhận diện chữ</button>
 
 </div>
 
@@ -103,47 +97,33 @@ background:#6a5af9;
 let score=0
 let currentGame=""
 
-function updateScore(){
-document.getElementById("score").innerText=score
-}
-
-function speak(text){
-
+function speak(t){
 speechSynthesis.cancel()
-
-let msg=new SpeechSynthesisUtterance(text)
-
+let msg=new SpeechSynthesisUtterance(t)
 msg.lang="vi-VN"
-msg.rate=0.9
-
 speechSynthesis.speak(msg)
-
 }
 
 function clap(){
-
 let audio=new Audio("https://www.soundjay.com/human/applause-8.mp3")
-
 audio.play()
-
 }
 
 function firework(){
 
 for(let i=0;i<40;i++){
 
-let div=document.createElement("div")
+let d=document.createElement("div")
 
-div.innerHTML="🎆"
+d.innerHTML="🎆"
+d.style.position="fixed"
+d.style.left=Math.random()*100+"%"
+d.style.top=Math.random()*100+"%"
+d.style.fontSize="32px"
 
-div.style.position="fixed"
-div.style.left=Math.random()*100+"%"
-div.style.top=Math.random()*100+"%"
-div.style.fontSize="30px"
+document.body.appendChild(d)
 
-document.body.appendChild(div)
-
-setTimeout(()=>div.remove(),1200)
+setTimeout(()=>d.remove(),1000)
 
 }
 
@@ -151,87 +131,69 @@ setTimeout(()=>div.remove(),1200)
 
 function praise(){
 
-let praises=[
-"Con giỏi quá",
-"Bảo Khánh giỏi quá",
-"Giỏi lắm",
-"Tuyệt vời",
-"Chính xác"
-]
+let arr=["Bảo Khánh giỏi quá","Con giỏi quá","Giỏi lắm"]
 
-let say=praises[Math.floor(Math.random()*praises.length)]
+let s=arr[Math.floor(Math.random()*arr.length)]
 
-speak(say)
+speak(s)
 
 }
 
 function correct(){
 
-praise()
-
 score++
-updateScore()
+document.getElementById("score").innerText=score
 
+praise()
 clap()
 firework()
 
 setTimeout(()=>{
 
 if(currentGame=="animal") startAnimal()
-if(currentGame=="fruit") startFruit()
-if(currentGame=="car") startCar()
 if(currentGame=="math") startMath()
 if(currentGame=="compare") startCompare()
 if(currentGame=="spell") startSpell()
+if(currentGame=="missing") startMissing()
+if(currentGame=="letter") startLetter()
 
 },1200)
 
 }
 
 function wrong(){
-speak("Sai rồi, thử lại con nhé")
+speak("Sai rồi thử lại con nhé")
 }
 
-function createCountGame(list,name){
-
-let number=Math.floor(Math.random()*5)+1
-let item=list[Math.floor(Math.random()*list.length)]
-
-let html=""
-
-for(let i=0;i<number;i++) html+=item+" "
-
-document.getElementById("game").innerHTML=`
-
-<div class="question">Có bao nhiêu ${name}?</div>
-
-<div class="emoji">${html}</div>
-
-<div>
-<button onclick="check(${number},${number})">${number}</button>
-<button onclick="check(${number+1},${number})">${number+1}</button>
-<button onclick="check(${number-1},${number})">${number-1}</button>
-</div>
-
-`
-
-speak("Có bao nhiêu "+name)
-
+function check(a,b){
+if(a==b) correct()
+else wrong()
 }
 
 function startAnimal(){
+
 currentGame="animal"
-createCountGame(["🐶","🐱","🐰","🐼"],"con")
-}
 
-function startFruit(){
-currentGame="fruit"
-createCountGame(["🍎","🍊","🍌","🍉"],"trái cây")
-}
+let n=Math.floor(Math.random()*5)+1
 
-function startCar(){
-currentGame="car"
-createCountGame(["🚗","🚕","🚙","🚌"],"xe")
+let html=""
+
+for(let i=0;i<n;i++) html+="🐶 "
+
+document.getElementById("game").innerHTML=`
+
+<div class="question">Có bao nhiêu con?</div>
+
+<div class="emoji">${html}</div>
+
+<button onclick="check(${n},${n})">${n}</button>
+<button onclick="check(${n+1},${n})">${n+1}</button>
+<button onclick="check(${n-1},${n})">${n-1}</button>
+
+`
+
+speak("Có bao nhiêu con")
+
 }
 
 function startMath(){
@@ -241,23 +203,19 @@ currentGame="math"
 let a=Math.floor(Math.random()*10)
 let b=Math.floor(Math.random()*10)
 
-let correctAns=a+b
+let c=a+b
 
 document.getElementById("game").innerHTML=`
 
-<div class="question">Tính phép cộng</div>
+<div class="question">${a} + ${b}</div>
 
-<div class="emoji">${a} + ${b}</div>
-
-<div>
-<button onclick="check(${correctAns},${correctAns})">${correctAns}</button>
-<button onclick="check(${correctAns+1},${correctAns})">${correctAns+1}</button>
-<button onclick="check(${correctAns-1},${correctAns})">${correctAns-1}</button>
-</div>
+<button onclick="check(${c},${c})">${c}</button>
+<button onclick="check(${c+1},${c})">${c+1}</button>
+<button onclick="check(${c-1},${c})">${c-1}</button>
 
 `
 
-speak(a+" cộng "+b+" bằng bao nhiêu")
+speak(a+" cộng "+b)
 
 }
 
@@ -270,19 +228,27 @@ let b=Math.floor(Math.random()*20)
 
 document.getElementById("game").innerHTML=`
 
-<div class="question">Chọn dấu đúng</div>
+<div class="question">${a} ? ${b}</div>
 
-<div class="emoji">${a} ? ${b}</div>
-
-<div>
 <button onclick="checkSign('>',${a},${b})">></button>
 <button onclick="checkSign('<',${a},${b})"><</button>
 <button onclick="checkSign('=',${a},${b})">=</button>
-</div>
 
 `
 
 speak("So sánh hai số")
+
+}
+
+function checkSign(s,a,b){
+
+let r="="
+
+if(a>b) r=">"
+if(a<b) r="<"
+
+if(s==r) correct()
+else wrong()
 
 }
 
@@ -293,71 +259,9 @@ currentGame="spell"
 let words=[
 
 ["BA","bờ a ba"],
-["BÀ","bờ a ba huyền bà"],
 ["BÁ","bờ a ba sắc bá"],
-["BẠ","bờ a ba nặng bạ"],
+["CA","cờ a ca"],
+["MA","mờ a ma"],
 ["MẸ","mờ e me nặng mẹ"],
-["LY","lờ y ly"],
-["ĐI","đờ i đi"],
-["XA","xờ a xa"],
-["HỒ","hờ ô hô huyền hồ"],
-["CÔ","cờ ô cô"],
-["CỬ","cờ ư cư hỏi cử"],
-["TẠ","tờ a ta nặng tạ"],
-["MÁ","mờ a ma sắc má"],
-["MÀ","mờ a ma huyền mà"],
-["LÁ","lờ a la sắc lá"],
-["ĐÁ","đờ a đa sắc đá"]
+["LY","lờ]()
 
-]
-
-let w=words[Math.floor(Math.random()*words.length)]
-
-let correctWord=w[0]
-let sound=w[1]
-
-document.getElementById("game").innerHTML=`
-
-<div class="question">Nghe và chọn chữ đúng</div>
-
-<div class="emoji">🔊</div>
-
-<div>
-<button onclick="checkWord('${correctWord}','${correctWord}')">${correctWord}</button>
-<button onclick="checkWord('BA','${correctWord}')">BA</button>
-<button onclick="checkWord('CA','${correctWord}')">CA</button>
-<button onclick="checkWord('MA','${correctWord}')">MA</button>
-</div>
-
-`
-
-speak(sound)
-
-}
-
-function check(ans,correctAns){
-if(ans==correctAns) correct()
-else wrong()
-}
-
-function checkWord(ans,correctAns){
-if(ans==correctAns) correct()
-else wrong()
-}
-
-function checkSign(sign,a,b){
-
-let correctSign="="
-
-if(a>b) correctSign=">"
-if(a<b) correctSign="<"
-
-if(sign==correctSign) correct()
-else wrong()
-
-}
-
-</script>
-
-</body>
-</html>
