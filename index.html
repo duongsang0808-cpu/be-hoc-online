@@ -65,6 +65,11 @@ font-size:60px;
 margin-bottom:15px;
 }
 
+.star{
+font-size:120px;
+margin:20px;
+}
+
 </style>
 
 </head>
@@ -94,21 +99,23 @@ margin-bottom:15px;
 <script>
 
 let score=0
-let currentGame=""
 let streak=0
-let lastAnimal=-1
+let currentGame=""
+
+let musicStarted=false
 
 const music=new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8b05f6e6b.mp3?filename=kids-music-112191.mp3")
 music.loop=true
-music.volume=0.08
+music.volume=0.07
 
-window.onload=function(){
+function startMusic(){
+
+if(!musicStarted){
 
 music.play()
+musicStarted=true
 
-setTimeout(()=>{
-speak("Chào mừng bé Dương Bảo Khánh")
-},800)
+}
 
 }
 
@@ -117,18 +124,9 @@ function speak(t){
 speechSynthesis.cancel()
 
 let msg=new SpeechSynthesisUtterance(t)
-
 msg.lang="vi-VN"
 
 speechSynthesis.speak(msg)
-
-}
-
-function clap(){
-
-let audio=new Audio("https://www.soundjay.com/human/applause-8.mp3")
-audio.volume=0.3
-audio.play()
 
 }
 
@@ -139,7 +137,6 @@ for(let i=0;i<25;i++){
 let d=document.createElement("div")
 
 d.innerHTML="🎆"
-
 d.style.position="fixed"
 d.style.left=Math.random()*100+"%"
 d.style.top=Math.random()*100+"%"
@@ -170,14 +167,21 @@ if(currentGame=="letter") startLetter()
 
 function praise(){
 
-let arr=[
-"Bảo Khánh giỏi quá",
-"Giỏi lắm con"
-]
+let arr=["Bảo Khánh giỏi quá","Giỏi lắm con"]
 
 let s=arr[Math.floor(Math.random()*arr.length)]
 
+document.getElementById("game").innerHTML=
+'<div class="star">⭐</div>'
+
 speak(s)
+
+setTimeout(()=>{
+
+streak=0
+next()
+
+},3500)
 
 }
 
@@ -192,13 +196,13 @@ firework()
 
 if(streak>=5){
 
-clap()
 praise()
-streak=0
 
-}
+}else{
 
 next()
+
+}
 
 }
 
@@ -226,29 +230,35 @@ wrong()
 
 function startAnimal(){
 
+startMusic()
+
 currentGame="animal"
 
-let n
+const animals=[
 
-do{
+["🐶","con chó"],
+["🐱","con mèo"],
+["🐟","con cá"],
+["🐔","con gà"],
+["🚗","chiếc xe"]
 
-n=Math.floor(Math.random()*5)+1
+]
 
-}while(n==lastAnimal)
+let a=animals[Math.floor(Math.random()*animals.length)]
 
-lastAnimal=n
+let n=Math.floor(Math.random()*5)+1
 
 let html=""
 
 for(let i=0;i<n;i++){
 
-html+="🐶 "
+html+=a[0]+" "
 
 }
 
 document.getElementById("game").innerHTML=
 
-'<div class="question">Có bao nhiêu con?</div>'+
+'<div class="question">Có bao nhiêu '+a[1]+'?</div>'+
 
 '<div class="emoji">'+html+'</div>'+
 
@@ -258,11 +268,13 @@ document.getElementById("game").innerHTML=
 
 '<button onclick="check('+(n-1)+','+n+')">'+(n-1)+'</button>'
 
-speak("Có bao nhiêu con")
+speak("Có bao nhiêu "+a[1])
 
 }
 
 function startMath(){
+
+startMusic()
 
 currentGame="math"
 
@@ -286,6 +298,8 @@ speak(a+" cộng "+b)
 }
 
 function startCompare(){
+
+startMusic()
 
 currentGame="compare"
 
@@ -326,6 +340,8 @@ wrong()
 }
 
 function startSpell(){
+
+startMusic()
 
 currentGame="spell"
 
@@ -392,6 +408,8 @@ wrong()
 
 function startMissing(){
 
+startMusic()
+
 currentGame="missing"
 
 let words=[
@@ -426,6 +444,8 @@ speak(word)
 }
 
 function startLetter(){
+
+startMusic()
 
 currentGame="letter"
 
