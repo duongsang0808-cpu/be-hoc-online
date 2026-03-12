@@ -4,6 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Bé Dương Bảo Khánh</title>
 
 <style>
@@ -11,9 +12,9 @@
 body{
 font-family:Arial;
 background:#f4a7a3;
+text-align:center;
 margin:0;
 padding:20px;
-text-align:center;
 }
 
 .title{
@@ -40,7 +41,7 @@ margin-top:30px;
 }
 
 button{
-font-size:20px;
+font-size:22px;
 padding:12px 20px;
 margin:8px;
 border:none;
@@ -76,8 +77,6 @@ margin-bottom:15px;
 
 <div class="card">
 
-<div>
-
 <button onclick="startAnimal()">🐶 Đếm con vật</button> <button onclick="startMath()">➕➖ Toán</button> <button onclick="startCompare()">🔢 So sánh</button>
 
 <br>
@@ -88,34 +87,32 @@ margin-bottom:15px;
 
 <button onclick="startLetter()">🧠 Nhận diện chữ</button>
 
-</div>
-
 <div id="game"></div>
 
 </div>
 
 <script>
 
-let score=0;
-let currentGame="";
+let score=0
+let currentGame=""
 
 function speak(t){
 
-speechSynthesis.cancel();
+speechSynthesis.cancel()
 
-let msg=new SpeechSynthesisUtterance(t);
+let msg=new SpeechSynthesisUtterance(t)
 
-msg.lang="vi-VN";
+msg.lang="vi-VN"
 
-speechSynthesis.speak(msg);
+speechSynthesis.speak(msg)
 
 }
 
 function clap(){
 
-let audio=new Audio("https://www.soundjay.com/human/applause-8.mp3");
+let audio=new Audio("https://www.soundjay.com/human/applause-8.mp3")
 
-audio.play();
+audio.play()
 
 }
 
@@ -123,43 +120,57 @@ function firework(){
 
 for(let i=0;i<30;i++){
 
-let d=document.createElement("div");
+let d=document.createElement("div")
 
-d.innerHTML="🎆";
+d.innerHTML="🎆"
 
-d.style.position="fixed";
+d.style.position="fixed"
+d.style.left=Math.random()*100+"%"
+d.style.top=Math.random()*100+"%"
+d.style.fontSize="30px"
 
-d.style.left=Math.random()*100+"%";
+document.body.appendChild(d)
 
-d.style.top=Math.random()*100+"%";
-
-d.style.fontSize="30px";
-
-document.body.appendChild(d);
-
-setTimeout(()=>d.remove(),1000);
+setTimeout(()=>d.remove(),1000)
 
 }
+
+}
+
+function next(){
+
+setTimeout(()=>{
+
+if(currentGame=="animal") startAnimal()
+if(currentGame=="math") startMath()
+if(currentGame=="compare") startCompare()
+if(currentGame=="spell") startSpell()
+if(currentGame=="missing") startMissing()
+if(currentGame=="letter") startLetter()
+
+},1200)
 
 }
 
 function correct(){
 
-score++;
+score++
 
-document.getElementById("score").innerText=score;
+document.getElementById("score").innerText=score
 
-speak("Bảo Khánh giỏi quá");
+speak("Bảo Khánh giỏi quá")
 
-clap();
+clap()
 
-firework();
+firework()
+
+next()
 
 }
 
 function wrong(){
 
-speak("Sai rồi thử lại con nhé");
+speak("Sai rồi thử lại con nhé")
 
 }
 
@@ -167,11 +178,11 @@ function check(a,b){
 
 if(a==b){
 
-correct();
+correct()
 
 }else{
 
-wrong();
+wrong()
 
 }
 
@@ -179,39 +190,42 @@ wrong();
 
 function startAnimal(){
 
-currentGame="animal";
+currentGame="animal"
 
-let n=Math.floor(Math.random()*5)+1;
+let n=Math.floor(Math.random()*5)+1
 
-let html="";
+let html=""
 
 for(let i=0;i<n;i++){
 
-html+="🐶 ";
+html+="🐶 "
 
 }
 
 document.getElementById("game").innerHTML=
 
 '<div class="question">Có bao nhiêu con?</div>'+
-'<div class="emoji">'+html+'</div>'+
-'<button onclick="check('+n+','+n+')">'+n+'</button>'+
-'<button onclick="check('+(n+1)+','+n+')">'+(n+1)+'</button>'+
-'<button onclick="check('+(n-1)+','+n+')">'+(n-1)+'</button>';
 
-speak("Có bao nhiêu con");
+'<div class="emoji">'+html+'</div>'+
+
+'<button onclick="check('+n+','+n+')">'+n+'</button>'+
+
+'<button onclick="check('+(n+1)+','+n+')">'+(n+1)+'</button>'+
+
+'<button onclick="check('+(n-1)+','+n+')">'+(n-1)+'</button>'
+
+speak("Có bao nhiêu con")
 
 }
 
 function startMath(){
 
-currentGame="math";
+currentGame="math"
 
-let a=Math.floor(Math.random()*10);
+let a=Math.floor(Math.random()*10)
+let b=Math.floor(Math.random()*10)
 
-let b=Math.floor(Math.random()*10);
-
-let c=a+b;
+let c=a+b
 
 document.getElementById("game").innerHTML=
 
@@ -221,19 +235,18 @@ document.getElementById("game").innerHTML=
 
 '<button onclick="check('+(c+1)+','+c+')">'+(c+1)+'</button>'+
 
-'<button onclick="check('+(c-1)+','+c+')">'+(c-1)+'</button>';
+'<button onclick="check('+(c-1)+','+c+')">'+(c-1)+'</button>'
 
-speak(a+" cộng "+b);
+speak(a+" cộng "+b)
 
 }
 
 function startCompare(){
 
-currentGame="compare";
+currentGame="compare"
 
-let a=Math.floor(Math.random()*20);
-
-let b=Math.floor(Math.random()*20);
+let a=Math.floor(Math.random()*20)
+let b=Math.floor(Math.random()*20)
 
 document.getElementById("game").innerHTML=
 
@@ -243,27 +256,26 @@ document.getElementById("game").innerHTML=
 
 '<button onclick="checkSign(\'<\','+a+','+b+')"><</button>'+
 
-'<button onclick="checkSign(\'=\','+a+','+b+')">=</button>';
+'<button onclick="checkSign(\'=\','+a+','+b+')">=</button>'
 
-speak("So sánh hai số");
+speak("So sánh hai số")
 
 }
 
 function checkSign(s,a,b){
 
-let r="=";
+let r="="
 
-if(a>b) r=">";
-
-if(a<b) r="<";
+if(a>b) r=">"
+if(a<b) r="<"
 
 if(s==r){
 
-correct();
+correct()
 
 }else{
 
-wrong();
+wrong()
 
 }
 
@@ -271,43 +283,40 @@ wrong();
 
 function startSpell(){
 
-currentGame="spell";
+currentGame="spell"
 
 let words=[
 
 ["BA","bờ a ba"],
-
-["BÁ","bờ a ba sắc bá"],
-
-["CA","cờ a ca"],
-
-["MA","mờ a ma"],
-
-["MẸ","mờ e me nặng mẹ"],
-
-["LY","lờ y ly"],
-
+["BÉ","bờ e be sắc bé"],
 ["CÔ","cờ ô cô"],
-
 ["HỒ","hờ ô hô huyền hồ"],
-
+["LY","lờ y ly"],
 ["ĐI","đờ i đi"],
+["XA","xờ a xa"],
+["MẸ","mờ e me nặng mẹ"],
+["CÁ","cờ a ca sắc cá"],
+["LÁ","lờ a la sắc lá"]
 
-["XA","xờ a xa"]
+]
 
-];
+let w=words[Math.floor(Math.random()*words.length)]
 
-let w=words[Math.floor(Math.random()*words.length)];
+let correct=w[0]
 
-let correct=w[0];
+let options=[correct]
 
-let options=["BA","CA","MA","LY"];
+while(options.length<4){
 
-options.sort(()=>Math.random()-0.5);
+let r=words[Math.floor(Math.random()*words.length)][0]
+
+if(!options.includes(r)) options.push(r)
+
+}
+
+options.sort(()=>Math.random()-0.5)
 
 document.getElementById("game").innerHTML=
-
-'<div class="question">Nghe và chọn chữ đúng</div>'+
 
 '<div class="emoji">🔊</div>'+
 
@@ -317,9 +326,9 @@ document.getElementById("game").innerHTML=
 
 '<button onclick="checkWord(\''+options[2]+'\',\''+correct+'\')">'+options[2]+'</button>'+
 
-'<button onclick="checkWord(\''+options[3]+'\',\''+correct+'\')">'+options[3]+'</button>';
+'<button onclick="checkWord(\''+options[3]+'\',\''+correct+'\')">'+options[3]+'</button>'
 
-speak(w[1]);
+speak(w[1])
 
 }
 
@@ -327,11 +336,11 @@ function checkWord(a,b){
 
 if(a==b){
 
-correct();
+correct()
 
 }else{
 
-wrong();
+wrong()
 
 }
 
@@ -339,45 +348,75 @@ wrong();
 
 function startMissing(){
 
-currentGame="missing";
+currentGame="missing"
 
-let words=[["B_","A"],["M_","E"],["L_","Y"],["C_","Ô"]];
+let words=[
 
-let w=words[Math.floor(Math.random()*words.length)];
+["BA","A"],
+
+["BÉ","É"],
+
+["CÔ","Ô"],
+
+["LY","Y"]
+
+]
+
+let w=words[Math.floor(Math.random()*words.length)]
+
+let word=w[0]
+
+let missing=w[1]
+
+let display=word[0]+" _"
 
 document.getElementById("game").innerHTML=
 
-'<div class="question">Chữ còn thiếu</div>'+
+'<div class="emoji">'+display+'</div>'+
 
-'<div class="emoji">'+w[0]+'</div>'+
+'<button onclick="check(\''+missing+'\',\''+missing+'\')">'+missing+'</button>'+
 
-'<button onclick="check(\''+w[1]+'\',\''+w[1]+'\')">'+w[1]+'</button>'+
+'<button onclick="check(\'A\',\''+missing+'\')">A</button>'+
 
-'<button onclick="check(\'A\',\''+w[1]+'\')">A</button>'+
+'<button onclick="check(\'E\',\''+missing+'\')">E</button>'
 
-'<button onclick="check(\'E\',\''+w[1]+'\')">E</button>';
+speak(word)
 
 }
 
 function startLetter(){
 
-currentGame="letter";
+currentGame="letter"
 
-let letters=["a","ă","â"];
+let letters=["a","ă","â","b","c","d","đ","e","ê","g","h","i","k","l","m","n","o","ô","ơ","p","q","r","s","t","u","ư","v","x","y"]
 
-let correct=letters[Math.floor(Math.random()*letters.length)];
+let correct=letters[Math.floor(Math.random()*letters.length)]
+
+let options=[correct]
+
+while(options.length<4){
+
+let r=letters[Math.floor(Math.random()*letters.length)]
+
+if(!options.includes(r)) options.push(r)
+
+}
+
+options.sort(()=>Math.random()-0.5)
 
 document.getElementById("game").innerHTML=
 
-'<div class="question">Đâu là chữ '+correct+'?</div>'+
+'<div class="emoji">🔊</div>'+
 
-'<button onclick="check(\''+correct+'\',\'a\')">a</button>'+
+'<button onclick="check(\''+options[0]+'\',\''+correct+'\')">'+options[0]+'</button>'+
 
-'<button onclick="check(\''+correct+'\',\'ă\')">ă</button>'+
+'<button onclick="check(\''+options[1]+'\',\''+correct+'\')">'+options[1]+'</button>'+
 
-'<button onclick="check(\''+correct+'\',\'â\')">â</button>';
+'<button onclick="check(\''+options[2]+'\',\''+correct+'\')">'+options[2]+'</button>'+
 
-speak("Đâu là chữ "+correct);
+'<button onclick="check(\''+options[3]+'\',\''+correct+'\')">'+options[3]+'</button>'
+
+speak("đâu là chữ "+correct)
 
 }
 
@@ -385,3 +424,4 @@ speak("Đâu là chữ "+correct);
 
 </body>
 </html>
+
