@@ -1,188 +1,130 @@
 <!DOCTYPE html>
-
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Bé Dương Bảo Khánh</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&display=swap" rel="stylesheet">
 
 <style>
 
 body{
-font-family:Arial;
-background:#f4a7a3;
+font-family:'Andika',sans-serif;
+background:#f3a6a6;
 text-align:center;
 margin:0;
-padding:20px;
 }
 
-.title{
-font-size:32px;
-font-weight:bold;
+h1{
+margin-top:20px;
+font-size:40px;
 }
 
-.score{
+#score{
+font-size:24px;
+margin:10px;
+}
+
+.menu{
 background:white;
-display:inline-block;
-padding:10px 20px;
-border-radius:20px;
-margin-top:10px;
-font-size:20px;
-}
-
-.card{
-background:#eee;
+margin:20px auto;
 padding:30px;
-border-radius:30px;
-max-width:700px;
-margin:auto;
-margin-top:30px;
+border-radius:20px;
+width:80%;
 }
 
 button{
-font-size:22px;
-padding:12px 20px;
-margin:8px;
+font-family:'Andika';
+font-size:28px;
+padding:15px 25px;
+margin:10px;
 border:none;
-border-radius:14px;
-background:#6c5ce7;
+border-radius:15px;
+background:#6c63ff;
 color:white;
 cursor:pointer;
 }
 
 button:hover{
-background:#5848d6;
+background:#4f47e5;
+}
+
+#game{
+margin-top:30px;
+}
+
+.option{
+font-size:40px;
+margin:10px;
+padding:20px;
+width:100px;
+background:white;
+border-radius:15px;
+display:inline-block;
+cursor:pointer;
 }
 
 .question{
-font-size:28px;
-margin-bottom:15px;
-}
-
-.emoji{
-font-size:60px;
-margin-bottom:15px;
+font-size:38px;
+margin:20px;
 }
 
 .star{
 font-size:120px;
-margin:20px;
+color:gold;
+display:none;
 }
 
 </style>
-
 </head>
 
 <body>
 
-<div class="title">🎓 Bé Dương Bảo Khánh</div>
+<h1>🎓 Bé Dương Bảo Khánh</h1>
+<div id="score">⭐ Điểm: 0</div>
 
-<div class="score">⭐ Điểm: <span id="score">0</span></div>
+<div class="menu">
 
-<div class="card">
-
-<button onclick="startAnimal()">🐶 Đếm con vật</button> <button onclick="startMath()">➕➖ Toán</button> <button onclick="startCompare()">🔢 So sánh</button>
-
-<br>
-
-<button onclick="startSpell()">🔤 Đánh vần</button> <button onclick="startMissing()">🧩 Chữ còn thiếu</button>
-
-<br>
-
+<button onclick="startAnimal()">🐶 Đếm con vật</button>
+<button onclick="startSpell()">🔤 Đánh vần</button>
+<button onclick="startMissing()">🧩 Chữ còn thiếu</button>
 <button onclick="startLetter()">🧠 Nhận diện chữ</button>
 
-<div id="game"></div>
-
 </div>
+
+<div id="game"></div>
+<div class="star" id="star">⭐</div>
+
+<audio id="music" loop>
+<source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_3e7d6e9f5e.mp3">
+</audio>
 
 <script>
 
 let score=0
 let streak=0
-let currentGame=""
 
-let musicStarted=false
+const animals=["🐱","🐶","🐟","🐔","🚗"]
 
-const music=new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8b05f6e6b.mp3?filename=kids-music-112191.mp3")
-music.loop=true
-music.volume=0.07
+const letters=[
+"a","ă","â","b","c","d","đ","e","ê",
+"g","h","i","k","l","m","n","o","ô","ơ",
+"p","q","r","s","t","u","ư","v","x","y"
+]
 
-function startMusic(){
+const words=[
+"ba","bà","bá","bé","bò","cá","cô","cờ","mẹ","xe",
+"gà","cá","mèo","bê","cá","cô","cò","cua","sò","tô"
+]
 
-if(!musicStarted){
-
-music.play()
-musicStarted=true
-
-}
-
-}
-
-function speak(t){
-
-speechSynthesis.cancel()
-
-let msg=new SpeechSynthesisUtterance(t)
+function speak(text){
+let msg=new SpeechSynthesisUtterance(text)
 msg.lang="vi-VN"
-
 speechSynthesis.speak(msg)
-
 }
 
-function firework(){
-
-for(let i=0;i<25;i++){
-
-let d=document.createElement("div")
-
-d.innerHTML="🎆"
-d.style.position="fixed"
-d.style.left=Math.random()*100+"%"
-d.style.top=Math.random()*100+"%"
-d.style.fontSize="30px"
-
-document.body.appendChild(d)
-
-setTimeout(()=>d.remove(),1000)
-
-}
-
-}
-
-function next(){
-
-setTimeout(()=>{
-
-if(currentGame=="animal") startAnimal()
-if(currentGame=="math") startMath()
-if(currentGame=="compare") startCompare()
-if(currentGame=="spell") startSpell()
-if(currentGame=="missing") startMissing()
-if(currentGame=="letter") startLetter()
-
-},1200)
-
-}
-
-function praise(){
-
-let arr=["Bảo Khánh giỏi quá","Giỏi lắm con"]
-
-let s=arr[Math.floor(Math.random()*arr.length)]
-
-document.getElementById("game").innerHTML=
-'<div class="star">⭐</div>'
-
-speak(s)
-
-setTimeout(()=>{
-
-streak=0
-next()
-
-},3500)
-
+function updateScore(){
+document.getElementById("score").innerText="⭐ Điểm: "+score
 }
 
 function correct(){
@@ -190,294 +132,189 @@ function correct(){
 score++
 streak++
 
-document.getElementById("score").innerText=score
-
-firework()
+updateScore()
 
 if(streak>=5){
-
-praise()
-
-}else{
-
-next()
-
+showStar()
+streak=0
 }
+}
+
+function showStar(){
+
+let star=document.getElementById("star")
+star.style.display="block"
+
+speak("Giỏi lắm Bảo Khánh")
+
+setTimeout(()=>{
+star.style.display="none"
+},3000)
 
 }
 
 function wrong(){
-
 streak=0
-
-speak("Sai rồi thử lại con nhé")
-
 }
 
-function check(a,b){
-
-if(a==b){
-
-correct()
-
-}else{
-
-wrong()
-
-}
-
+function random(a){
+return a[Math.floor(Math.random()*a.length)]
 }
 
 function startAnimal(){
 
-startMusic()
+let game=document.getElementById("game")
 
-currentGame="animal"
+let animal=random(animals)
+let count=Math.floor(Math.random()*4)+1
 
-const animals=[
+let html="<div class='question'>Có bao nhiêu "+animal+"?</div>"
 
-["🐶","con chó"],
-["🐱","con mèo"],
-["🐟","con cá"],
-["🐔","con gà"],
-["🚗","chiếc xe"]
+for(let i=0;i<count;i++) html+=animal+" "
 
-]
+html+="<br><br>"
 
-let a=animals[Math.floor(Math.random()*animals.length)]
+for(let i=1;i<=5;i++){
+html+="<div class='option' onclick='answerAnimal("+i+","+count+")'>"+i+"</div>"
+}
 
-let n=Math.floor(Math.random()*5)+1
+game.innerHTML=html
 
-let html=""
-
-for(let i=0;i<n;i++){
-
-html+=a[0]+" "
+speak("có bao nhiêu con")
 
 }
 
-document.getElementById("game").innerHTML=
-
-'<div class="question">Có bao nhiêu '+a[1]+'?</div>'+
-
-'<div class="emoji">'+html+'</div>'+
-
-'<button onclick="check('+n+','+n+')">'+n+'</button>'+
-
-'<button onclick="check('+(n+1)+','+n+')">'+(n+1)+'</button>'+
-
-'<button onclick="check('+(n-1)+','+n+')">'+(n-1)+'</button>'
-
-speak("Có bao nhiêu "+a[1])
-
-}
-
-function startMath(){
-
-startMusic()
-
-currentGame="math"
-
-let a=Math.floor(Math.random()*10)
-let b=Math.floor(Math.random()*10)
-
-let c=a+b
-
-document.getElementById("game").innerHTML=
-
-'<div class="question">'+a+' + '+b+'</div>'+
-
-'<button onclick="check('+c+','+c+')">'+c+'</button>'+
-
-'<button onclick="check('+(c+1)+','+c+')">'+(c+1)+'</button>'+
-
-'<button onclick="check('+(c-1)+','+c+')">'+(c-1)+'</button>'
-
-speak(a+" cộng "+b)
-
-}
-
-function startCompare(){
-
-startMusic()
-
-currentGame="compare"
-
-let a=Math.floor(Math.random()*20)
-let b=Math.floor(Math.random()*20)
-
-document.getElementById("game").innerHTML=
-
-'<div class="question">'+a+' ? '+b+'</div>'+
-
-'<button onclick="checkSign(\'>\','+a+','+b+')">></button>'+
-
-'<button onclick="checkSign(\'<\','+a+','+b+')"><</button>'+
-
-'<button onclick="checkSign(\'=\','+a+','+b+')">=</button>'
-
-speak("So sánh hai số")
-
-}
-
-function checkSign(s,a,b){
-
-let r="="
-
-if(a>b) r=">"
-if(a<b) r="<"
-
-if(s==r){
-
+function answerAnimal(a,b){
+if(a==b){
 correct()
-
 }else{
-
 wrong()
-
 }
-
+setTimeout(startAnimal,800)
 }
 
 function startSpell(){
 
-startMusic()
+let game=document.getElementById("game")
 
-currentGame="spell"
+let word=random(words)
 
-let words=[
+let answers=[word]
 
-["BA","bờ a ba"],
-["BÉ","bờ e be sắc bé"],
-["CÔ","cờ ô cô"],
-["HỒ","hờ ô hô huyền hồ"],
-["LY","lờ y ly"],
-["ĐI","đờ i đi"],
-["XA","xờ a xa"],
-["MẸ","mờ e me nặng mẹ"],
-["CÁ","cờ a ca sắc cá"],
-["LÁ","lờ a la sắc lá"]
-
-]
-
-let w=words[Math.floor(Math.random()*words.length)]
-
-let correct=w[0]
-
-let options=[correct]
-
-while(options.length<4){
-
-let r=words[Math.floor(Math.random()*words.length)][0]
-
-if(!options.includes(r)) options.push(r)
-
+while(answers.length<3){
+let w=random(words)
+if(!answers.includes(w)) answers.push(w)
 }
 
-options.sort(()=>Math.random()-0.5)
+answers.sort(()=>Math.random()-0.5)
 
-document.getElementById("game").innerHTML=
+let html="<div class='question'>Nghe và chọn đúng</div>"
 
-'<div class="emoji">🔊</div>'+
+answers.forEach(a=>{
+html+="<div class='option' onclick='answerSpell(\""+a+"\",\""+word+"\")'>"+a+"</div>"
+})
 
-'<button onclick="checkWord(\''+options[0]+'\',\''+correct+'\')">'+options[0]+'</button>'+
-
-'<button onclick="checkWord(\''+options[1]+'\',\''+correct+'\')">'+options[1]+'</button>'+
-
-'<button onclick="checkWord(\''+options[2]+'\',\''+correct+'\')">'+options[2]+'</button>'+
-
-'<button onclick="checkWord(\''+options[3]+'\',\''+correct+'\')">'+options[3]+'</button>'
-
-speak(w[1])
-
-}
-
-function checkWord(a,b){
-
-if(a==b){
-
-correct()
-
-}else{
-
-wrong()
-
-}
-
-}
-
-function startMissing(){
-
-startMusic()
-
-currentGame="missing"
-
-let words=[
-
-["BA","A"],
-["BÉ","É"],
-["CÔ","Ô"],
-["LY","Y"]
-
-]
-
-let w=words[Math.floor(Math.random()*words.length)]
-
-let word=w[0]
-
-let missing=w[1]
-
-let display=word[0]+" _"
-
-document.getElementById("game").innerHTML=
-
-'<div class="emoji">'+display+'</div>'+
-
-'<button onclick="check(\''+missing+'\',\''+missing+'\')">'+missing+'</button>'+
-
-'<button onclick="check(\'A\',\''+missing+'\')">A</button>'+
-
-'<button onclick="check(\'E\',\''+missing+'\')">E</button>'
+game.innerHTML=html
 
 speak(word)
 
 }
 
-function startLetter(){
+function answerSpell(a,b){
+if(a==b){
+correct()
+}else{
+wrong()
+}
+setTimeout(startSpell,800)
+}
 
-startMusic()
+function startMissing(){
 
-currentGame="letter"
+let game=document.getElementById("game")
 
-let letters=["a","ă","â","b","c","d","đ","e","ê","g","h","i","k","l","m","n","o","ô","ơ","p","q","r","s","t","u","ư","v","x","y"]
+let word=random(words)
 
-let correct=letters[Math.floor(Math.random()*letters.length)]
+let missing=word[1]
 
-let options=[correct]
+let show=word[0]+" _"
 
-while(options.length<4){
+let answers=[missing]
 
-let r=letters[Math.floor(Math.random()*letters.length)]
+while(answers.length<3){
+let l=random(letters)
+if(!answers.includes(l)) answers.push(l)
+}
 
-if(!options.includes(r)) options.push(r)
+answers.sort(()=>Math.random()-0.5)
+
+let html="<div class='question'>"+show+"</div>"
+
+answers.forEach(a=>{
+html+="<div class='option' onclick='answerMissing(\""+a+"\",\""+missing+"\")'>"+a+"</div>"
+})
+
+game.innerHTML=html
+
+speak(word)
 
 }
 
-options.sort(()=>Math.random()-0.5)
+function answerMissing(a,b){
+if(a==b){
+correct()
+}else{
+wrong()
+}
+setTimeout(startMissing,800)
+}
 
-document.getElementById("game").innerHTML=
+function startLetter(){
 
-'<div class="emoji">🔊</div>'+
+let game=document.getElementById("game")
 
-'<button onclick="check(\''+options[0]+'\',\''+correct+'\')">'+options[0]+'</button>'+
+let letter=random(letters)
 
-'<button onclick="check(\''+options[1]+'\',\''+correct+'\')">'+options[1]+'</button>'+
+let answers=[letter]
 
-'<button onclick="check(\''+options[2]+'\',\''+correct+'\')">'+options[2]+'</button>'+
+while(answers.length<4){
+let l=random(letters)
+if(!answers.includes(l)) answers.push(l)
+}
 
-'<button onclick="check(\''+options[3]+'\',\''+correct+'\')">'+options[3]+'</button>'
+answers.sort(()=>Math.random()-0.5)
 
-speak("đâu là chữ "+correct)
+let html=""
+
+answers.forEach(a=>{
+html+="<div class='option' onclick='answerLetter(\""+a+"\",\""+letter+"\")'>"+a+"</div>"
+})
+
+game.innerHTML=html
+
+speak("đâu là chữ "+letter)
+
+}
+
+function answerLetter(a,b){
+if(a==b){
+correct()
+}else{
+wrong()
+}
+setTimeout(startLetter,800)
+}
+
+window.onload=function(){
+
+speak("chào mừng bé Dương Bảo Khánh")
+
+let music=document.getElementById("music")
+
+setTimeout(()=>{
+music.volume=0.15
+music.play()
+},2000)
 
 }
 
@@ -485,4 +322,3 @@ speak("đâu là chữ "+correct)
 
 </body>
 </html>
-
